@@ -1,3 +1,12 @@
+## Setup
+
+1. Connect to your provided vm using `ssh@user_name@ip`
+2. Run `git clone https://github.com/ArctiqTeam/dotnet-otel-dynatrace-demo` then `git checkout lab`
+3. `cd dotnet-otel-dynatrace-demo`
+4. Configure appsettings.json or, if provided, run `cp /appsettings.json .`
+5. Run `dotnet run` and open your VM IP in a browser to verify that everything is working.
+
+## Tutorial
 ### 1. Create an ActivitySource model
 
 The activitySource is the source of all instrumentation in the application. It contains a name and a version. The name will also be used as the OTEL/Dynatrace service name. This class will be used with a singleton pattern in the DI container.
