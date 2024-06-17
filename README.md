@@ -81,8 +81,18 @@ loggerFactoryOT = LoggerFactory.Create(builder =>
 
 services.AddSingleton<ILoggerFactory>(loggerFactoryOT);
 ```
+In `Controllers/HomeController.cs`, add the logger using DI:
 
-In `Controllers/HomeController.cs`, add a `Test` action, logging a test message:
+```csharp
+private readonly ILogger<HomeController> _logger;
+
+public HomeController(ILogger<HomeController> logger)
+{
+    _logger = logger;
+}
+```
+
+Then add a `Test` action, logging a test message:
 
 ```csharp
  public IActionResult Test()
@@ -128,7 +138,20 @@ Sdk.CreateTracerProviderBuilder()
 
 Check that calls are being traced in Dynatrace.
 
-In `Controllers/HomeController.cs`, add a `Test` action and a private method with cutom spans:
+In `Controllers/HomeController.cs`, add the activity source using DI:
+
+```csharp
+private readonly ILogger<HomeController> _logger;
+public ActivitySource activitySource;
+
+public HomeController(ILogger<HomeController> logger, Instrumentation instrumentation)
+{
+    _logger = logger;
+    activitySource = instrumentation.ActivitySource;
+}
+```
+
+Then, add a `Test` action and a private method with cutom spans:
 ```csharp
 private void TestSpans() {
         using var activity1 = activitySource.StartActivity("test.1");
@@ -426,6 +449,21 @@ services.AddOpenTelemetry()
             });
         }
     });
+```
+
+In `Controllers/HomeController.cs`, add the activity source using DI:
+
+```csharp
+private readonly ILogger<HomeController> _logger;
+public ActivitySource activitySource;
+private readonly RequestMeter _requestMeter;
+
+public HomeController(ILogger<HomeController> logger, Instrumentation instrumentation, RequestMeter requestMeter)
+{
+    _logger = logger;
+    activitySource = instrumentation.ActivitySource;
+    _requestMeter = requestMeter;
+}
 ```
 
 Next, lets put that metric in action:
