@@ -401,7 +401,7 @@ public class RequestMeter
 }
 ```
 
-Right now, this meter measures nothing, it has no metrics assoicated, but we can add a counter metric to it:
+Right now, this meter measures nothing, it has no metrics associated, but we can add a counter metric to it:
 
 ```csharp
 using System.Diagnostics.Metrics;
