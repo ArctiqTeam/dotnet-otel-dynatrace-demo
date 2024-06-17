@@ -1,12 +1,10 @@
 ### 1. Create an ActivitySource model
 
+The activitySource is the source of all instrumentation in the application. It contains a name and a version. The name will also be used as the OTEL/Dynatrace service name. This class will be used with a singleton pattern in the DI container.
+
 ```csharp
 using System.Diagnostics;
 
-/// <summary>
-/// It is recommended to use a custom type to hold references for ActivitySource.
-/// This avoids possible type collisions with other components in the DI container.
-/// </summary>
 public class Instrumentation : IDisposable
 {
     internal const string ActivitySourceName = "dotnet-otel";
@@ -26,14 +24,13 @@ public class Instrumentation : IDisposable
 }
 ```
 
-In `program.cs`, configure .NET instrumentation
+In `program.cs`, configure .NET instrumentation. This will first create an instance of the instrumentation class, then add it to the DI container as a singleton.
+
+Then we will add some metadata to the instrumentation. To do so, we are reading the metadata from a file with the format `key=value`. The file is a list of key-value pairs, one per line. This is the format used by Dynatrace in 2 important files: the host metadata (`/var/lib/dynatrace/enrichment/dt_metadata.properties`) and a virtual process metadata file (`dt_metadata_e617c525669e072eebe3d0f08212e8f2.properties`).
+
 ```csharp
 using System.Diagnostics;
 
-/// <summary>
-/// It is recommended to use a custom type to hold references for ActivitySource.
-/// This avoids possible type collisions with other components in the DI container.
-/// </summary>
 var MyInstrumentation = new Instrumentation();
 builder.Services.AddSingleton<Instrumentation>(MyInstrumentation);
 ActivitySource MyActivitySource = MyInstrumentation.ActivitySource;
@@ -58,7 +55,8 @@ foreach (string name in configuration.GetSection("Otlp:MetadataFiles").Get<strin
 
 ### 2. OTEL logs
 
-Add OTEL logging in program.cs
+Configure OTEL logging in program.cs. This will first create an instance of the logger factory, then add it to the DI container as a singleton.
+
 ```csharp
 // Configure OTEL logger
 loggerFactoryOT = LoggerFactory.Create(builder =>
@@ -98,7 +96,9 @@ Call to /Home/Test will show a log in Dynatrace.
 
 ### 3. OTEL tracing
 
-Configure OTEL tracing in program.cs
+Configure OTEL tracing in program.cs. This will first create an instance of the tracer provider builder, then add it to the DI container as a singleton. We configure the sampler to always be on, and set the source to the instrumentation class. We also use configureResource to load the metadata previously read.
+The `Sdk.CreateTracerProviderBuilder()` call is not required, but can add some details to the trace.
+
 ```csharp
 services.AddOpenTelemetry()
     .ConfigureResource(configureResource)
