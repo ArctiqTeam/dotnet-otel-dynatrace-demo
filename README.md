@@ -4,7 +4,8 @@
 2. Run `git clone https://github.com/ArctiqTeam/dotnet-otel-dynatrace-demo` then `git checkout lab`
 3. `cd dotnet-otel-dynatrace-demo`
 4. Configure appsettings.json or, if provided, run `cp /appsettings.json .`
-5. Run `dotnet run` and open your VM IP in a browser to verify that everything is working.
+5. Use the remote connect feature of VS code to connect to the VM, then open `~/dotnet-otel-dynatrace-demo`
+6. Open a terminal in VS Code and run `dotnet run` and open your VM IP in a browser to verify that everything is working.
 
 ## Tutorial
 ### 1. Create an ActivitySource model
