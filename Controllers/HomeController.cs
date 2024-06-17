@@ -23,6 +23,14 @@ public class HomeController : Controller
         return View();
     }
 
+    private void TestSpans() {
+        using var activity1 = activitySource.StartActivity("test.1");
+        // _logger.LogInformation("Test level 1");
+
+        using var activity2 = activitySource.StartActivity("test.2").SetParentId(activity1.TraceId, activity1.SpanId);
+        // _logger.LogInformation("Test level 2");
+    }
+
     public IActionResult Test()
     {
         using (var activity0 = activitySource.StartActivity("test.a")) {
@@ -35,14 +43,6 @@ public class HomeController : Controller
             }
         }
         return Ok("Test OK");
-    }
-
-    private void TestSpans() {
-        using var activity1 = activitySource.StartActivity("test.1");
-        // _logger.LogInformation("Test level 1");
-
-        using var activity2 = activitySource.StartActivity("test.2").SetParentId(activity1.TraceId, activity1.SpanId);
-        // _logger.LogInformation("Test level 2");
     }
 
     public IActionResult Count()
