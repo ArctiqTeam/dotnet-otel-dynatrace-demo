@@ -61,6 +61,13 @@ foreach (string name in configuration.GetSection("Otlp:MetadataFiles").Get<strin
     }
     catch { }
 }
+
+Action<ResourceBuilder> configureResource = r => r
+    .AddService(serviceName: MyActivitySource.Name)
+    .AddAttributes(metadata);
+
+var resourceBuilder = ResourceBuilder.CreateDefault();
+configureResource!(resourceBuilder);
 ```
 
 ### 2. OTEL logs
